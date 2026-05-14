@@ -13,6 +13,7 @@ pub mod templates;
 
 use gstd::{exec, msg, ActorId};
 use sails_rs::prelude::*;
+use sails_rs::scale_codec::Encode;
 
 use state::*;
 use broadcast::{post_to_board, post_to_chat};
@@ -125,9 +126,36 @@ impl VaraPulseService<'_> {
             GAS_FOR_BRIDGE_QUERY,
         )
         .expect("Bridge query failed");
+
+        let route = ["VaraPulse".encode(), "Run".encode()].concat();
+        msg::send_bytes_with_gas_delayed(
+            exec::program_id(),
+            &route,
+            exec::gas_available() * 80 / 100,
+            0,
+            300,
+        )
+        .expect("Failed to reschedule pulse");
     }
 
     #[export]
+    pub fn start_auto(&mut self) {
+        let caller = msg::source();
+        let owner = self.state.borrow().owner;
+        if caller != owner {
+            panic!("Owner only");
+        }
+        let route = ["VaraPulse".encode(), "Run".encode()].concat();
+        msg::send_bytes_with_gas_delayed(
+            exec::program_id(),
+            &route,
+            exec::gas_available() * 80 / 100,
+            0,
+            300,
+        )
+        .expect("Failed to start auto pulse loop");
+    }
+
     pub fn force_pulse(&mut self) {
         let caller = msg::source();
         let owner = self.state.borrow().owner;

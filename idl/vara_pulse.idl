@@ -61,4 +61,5 @@ service VaraPulse {
   GetLatestPulse : () -> opt PulseRecord;
   GetPulseHistory : (limit: u32) -> vec PulseRecord;
   GetStats : () -> PulseStats;
+  StartAuto : () -> null;
 };

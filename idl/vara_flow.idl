@@ -133,6 +133,7 @@ service VaraFlow {
   GetExecutionStatus : (exec_id: u64) -> opt ExecutionStatus;
   GetStats : () -> FlowStats;
   Tick : () -> null;
+  StartTick : () -> null;
   UseTemplate : (template: TemplateType, params: TemplateParams) -> u64;
   SetBridge : (bridge_pid: actor_id) -> null;
   SetPulse : (pulse_pid: actor_id) -> null;

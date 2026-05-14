@@ -105,4 +105,6 @@ service VaraBridge {
   GetSnapshot : (keys: vec str) -> BridgeSnapshot;
   GetStats : () -> BridgeStats;
   QueryAndReply : (request: QueryRequest) -> QueryReply;
+  StartAuto : () -> null;
+  DoBroadcastLoop : () -> null;
 };

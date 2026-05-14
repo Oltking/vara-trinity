@@ -11,6 +11,7 @@ pub mod state;
 
 use gstd::{exec, msg, ActorId};
 use sails_rs::prelude::*;
+use sails_rs::scale_codec::Encode;
 
 use state::*;
 
@@ -111,6 +112,40 @@ impl VaraStrategyService<'_> {
     }
 
     #[export]
+    pub fn start_auto(&mut self) {
+        let caller = msg::source();
+        let owner = self.state.borrow().owner;
+        if caller != owner {
+            panic!("Owner only");
+        }
+        let route = ["VaraStrategy".encode(), "AutoCycle".encode()].concat();
+        msg::send_bytes_with_gas_delayed(
+            exec::program_id(),
+            &route,
+            exec::gas_available() * 80 / 100,
+            0,
+            600,
+        )
+        .expect("Failed to start auto cycle");
+    }
+
+    #[export]
+    pub fn auto_cycle(&mut self) {
+        let mut s = self.state.borrow_mut();
+        s.last_analysis_block = exec::block_height();
+        s.total_analyzed += 1;
+        drop(s);
+        let route = ["VaraStrategy".encode(), "AutoCycle".encode()].concat();
+        msg::send_bytes_with_gas_delayed(
+            exec::program_id(),
+            &route,
+            exec::gas_available() * 80 / 100,
+            0,
+            600,
+        )
+        .expect("Failed to reschedule auto cycle");
+    }
+
     pub fn mark_posted(&mut self, rec_id: u64) {
         let caller = msg::source();
         let mut s = self.state.borrow_mut();

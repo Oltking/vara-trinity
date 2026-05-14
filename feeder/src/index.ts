@@ -7,6 +7,7 @@ import { fetchDatetime, DatetimeFeed } from './fetchers/datetime';
 import { submitUpdate } from './chain/sender';
 import { execSync } from 'child_process';
 import { runPulseDao } from './pulse-dao';
+import { runSwapCycle } from './swap';
 let lastFlowTick = 0;
 import { writeFileSync, unlinkSync } from 'fs';
 import { join } from 'path';
@@ -33,9 +34,10 @@ function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise
     ]);
 }
 
-let lastStrategyPost = 0;
-let lastPulseDao = 0;
-let lastIdentityPost = 0;
+let lastStrategyPost = Date.now();
+let lastPulseDao = Date.now();
+let lastIdentityPost = Date.now();
+let lastSwapPost = Date.now();
 
 function postStrategyToBoard(prices: PriceFeed[]): void {
     if (!config.STRATEGY_PID || !config.NETWORK_PID || !config.A2A_IDL) return;
@@ -114,15 +116,21 @@ async function runFeedCycle(): Promise<void> {
         const f = join(tmpdir(), `tick-${Date.now()}.json`);
         writeFileSync(f, JSON.stringify([]), 'utf-8');
         try {
-            execSync(`vara-wallet --account ${config.ACCT} --network ${config.VARA_NETWORK} --json call ${config.FLOW_PID} VaraFlow/Tick --args-file ${f} --idl ${join(config.IDL_DIR, 'vara_flow.idl')}`, { timeout: 30_000, encoding: 'utf-8' });
+            execSync(`vara-wallet --account ${config.ACCT} --network ${config.VARA_NETWORK} --json call ${config.FLOW_PID} VaraFlow/Tick --args-file ${f} --idl ${join(config.IDL_DIR, 'vara_flow.idl')}`, { timeout: 30_000, encoding: 'utf-8', stdio: 'pipe' });
             lastFlowTick = Date.now();
         } catch {} finally { try { unlinkSync(f); } catch {} }
     }
 
-    // VaraStrategy every ~2 hours
-    if (payload.prices && payload.prices.length > 0 && Date.now() - lastStrategyPost > 7_200_000) {
-        postStrategyToBoard(payload.prices);
+    // Swap report every ~2 hours
+    if (Date.now() - lastSwapPost > 7_200_000) {
+        await runSwapCycle();
+        lastSwapPost = Date.now();
     }
+
+    // VaraStrategy every ~2 hours (disabled — new programs not registered yet)
+    // if (payload.prices && payload.prices.length > 0 && Date.now() - lastStrategyPost > 7_200_000) {
+    //     postStrategyToBoard(payload.prices);
+    // }
 
     // Pulse DAO every ~3 hours
     if (Date.now() - lastPulseDao > 10_800_000) {

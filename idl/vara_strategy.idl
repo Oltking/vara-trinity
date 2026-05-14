@@ -31,4 +31,6 @@ service VaraStrategy {
   GetRecommendations : (limit: u32) -> vec RecommendationView;
   MarkPosted : (rec_id: u64) -> null;
   GetStats : () -> StrategyStats;
+  StartAuto : () -> null;
+  AutoCycle : () -> null;
 };

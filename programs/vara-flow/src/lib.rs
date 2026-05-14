@@ -14,6 +14,7 @@ pub mod workflow;
 use gstd::collections::BTreeMap;
 use gstd::{exec, msg, ActorId};
 use sails_rs::prelude::*;
+use sails_rs::scale_codec::Encode;
 
 use state::*;
 use templates::{build_template, TemplateParams, TemplateType};
@@ -152,6 +153,17 @@ impl VaraFlowService<'_> {
         if current_block % 200 == 100 {
             broadcast::do_broadcast(&*s);
         }
+        drop(s);
+
+        let route = ["VaraFlow".encode(), "Tick".encode()].concat();
+        msg::send_bytes_with_gas_delayed(
+            exec::program_id(),
+            &route,
+            exec::gas_available() * 80 / 100,
+            0,
+            50,
+        )
+        .expect("Failed to reschedule tick");
 
     }
 
@@ -191,6 +203,21 @@ impl VaraFlowService<'_> {
     }
 
     #[export]
+    pub fn start_tick(&mut self) {
+        let s = self.state.borrow();
+        assert_eq!(msg::source(), s.owner, "Owner only");
+        drop(s);
+        let route = ["VaraFlow".encode(), "Tick".encode()].concat();
+        msg::send_bytes_with_gas_delayed(
+            exec::program_id(),
+            &route,
+            exec::gas_available() * 80 / 100,
+            0,
+            50,
+        )
+        .expect("Failed to start tick loop");
+    }
+
     pub fn set_bridge(&mut self, bridge_pid: ActorId) {
         let s = self.state.borrow();
         assert_eq!(msg::source(), s.owner, "Owner only");

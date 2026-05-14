@@ -1358,7 +1358,6 @@ dependencies = [
  "gcore",
  "gear-core",
  "gear-core-errors",
- "gear-wasm-builder",
  "gprimitives",
  "gstd",
  "gsys",
@@ -1862,6 +1861,7 @@ checksum = "b6c140620e7ffbb22c2dee59cafe6084a59b5ffc27a8859a5f0d494b5d52b6be"
 name = "vara-bridge"
 version = "0.1.0"
 dependencies = [
+ "gear-wasm-builder",
  "gstd",
  "hex",
  "sails-rs",
@@ -1871,8 +1871,8 @@ dependencies = [
 name = "vara-flow"
 version = "0.1.0"
 dependencies = [
+ "gear-wasm-builder",
  "gstd",
- "hex",
  "sails-rs",
 ]
 
@@ -1880,8 +1880,17 @@ dependencies = [
 name = "vara-pulse"
 version = "0.1.0"
 dependencies = [
+ "gear-wasm-builder",
  "gstd",
- "hex",
+ "sails-rs",
+]
+
+[[package]]
+name = "vara-strategy"
+version = "0.1.0"
+dependencies = [
+ "gear-wasm-builder",
+ "gstd",
  "sails-rs",
 ]
 

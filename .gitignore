@@ -20,6 +20,9 @@ dev-agent/
 .env
 !.env.example
 
+# A2A Hub IDL (external dependency)
+agents_network_client.idl
+
 # Wallet keys
 .vara-wallet/
 *.json

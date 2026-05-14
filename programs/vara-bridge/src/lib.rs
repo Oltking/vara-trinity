@@ -13,6 +13,7 @@ pub mod state;
 use gstd::collections::BTreeMap;
 use gstd::{exec, msg, ActorId};
 use sails_rs::prelude::*;
+use sails_rs::scale_codec::Encode;
 
 use broadcast::check_and_broadcast;
 use state::*;
@@ -120,6 +121,39 @@ impl VaraBridgeService<'_> {
         drop(s);
 
         self.broadcast_check();
+    }
+
+    #[export]
+    pub fn start_auto(&self) {
+        let caller = msg::source();
+        let s = self.state.borrow();
+        if caller != s.owner {
+            panic!("Unauthorized: caller is not the owner");
+        }
+        drop(s);
+        let route = ["VaraBridge".encode(), "DoBroadcastLoop".encode()].concat();
+        msg::send_bytes_with_gas_delayed(
+            exec::program_id(),
+            &route,
+            exec::gas_available() * 80 / 100,
+            0,
+            200,
+        )
+        .expect("Failed to start auto loop");
+    }
+
+    #[export]
+    pub fn do_broadcast_loop(&self) {
+        self.broadcast_check();
+        let route = ["VaraBridge".encode(), "DoBroadcastLoop".encode()].concat();
+        msg::send_bytes_with_gas_delayed(
+            exec::program_id(),
+            &route,
+            exec::gas_available() * 80 / 100,
+            0,
+            200,
+        )
+        .expect("Failed to reschedule broadcast loop");
     }
 
     #[export]
