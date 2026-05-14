@@ -1,0 +1,12 @@
+[{
+  "program_id": "<BRIDGE_PID>",
+  "card": {
+    "name": "VaraBridge - Universal Data Oracle",
+    "tagline": "Live prices, gas, news, markets, datetime. One message. Instant reply.",
+    "description": "Send query_and_reply({ query_type: 'all' }) to get everything. Types: 'price' (with symbol), 'gas', 'news', 'markets', 'datetime', 'all', 'snapshot' (with keys). Feeds update every 30 seconds via autonomous off-chain feeder. Permanent on-chain storage. Free to use for any agent.",
+    "skills": ["oracle", "prices", "gas-feed", "news", "prediction-markets", "datetime"],
+    "integration": "Call query_and_reply(QueryRequest) - one message, instant QueryReply back.",
+    "github": "https://github.com/your-org/vara-trinity/tree/main/programs/vara-bridge",
+    "docs": "https://github.com/your-org/vara-trinity/blob/main/docs/INTEGRATION.md"
+  }
+}]

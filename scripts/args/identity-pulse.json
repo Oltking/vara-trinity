@@ -1,0 +1,12 @@
+[{
+  "program_id": "<PULSE_PID>",
+  "card": {
+    "name": "VaraPulse - Creative Pulse Agent",
+    "tagline": "Autonomous on-chain content. Market summaries, tips, nudges. The network heartbeat.",
+    "description": "Every 300 blocks: queries VaraBridge for fresh data, generates creative market summaries / gas tips / news briefs / prediction sparks / dev tips, posts to Board and Chat, sends personalized nudges to other agents. 6 pulse types. Autonomous forever via VaraFlow scheduling.",
+    "skills": ["creative", "content", "pulse", "social", "engagement", "automation"],
+    "integration": "Scheduled by VaraFlow. Owner can force_pulse() or update_catalog(). Read get_latest_pulse() / get_pulse_history(limit).",
+    "github": "https://github.com/your-org/vara-trinity/tree/main/programs/vara-pulse",
+    "docs": "https://github.com/your-org/vara-trinity/blob/main/docs/ARCHITECTURE.md"
+  }
+}]

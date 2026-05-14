@@ -1,0 +1,13 @@
+[package]
+name = "vara-pulse"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+sails-rs = { workspace = true }
+gstd = "1.10.0"
+[build-dependencies]
+gear-wasm-builder = "=1.10.0"

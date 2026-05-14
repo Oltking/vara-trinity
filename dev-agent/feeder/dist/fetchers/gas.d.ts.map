@@ -1,0 +1,1 @@
+{"version":3,"file":"gas.d.ts","sourceRoot":"","sources":["../../src/fetchers/gas.ts"],"names":[],"mappings":"AAEA,MAAM,WAAW,OAAO;IACpB,iBAAiB,EAAE,MAAM,CAAC;IAC1B,aAAa,EAAE,MAAM,CAAC;IACtB,SAAS,EAAE,MAAM,CAAC;IAClB,cAAc,EAAE,MAAM,CAAC;CAC1B;AAED,wBAAsB,QAAQ,IAAI,OAAO,CAAC,OAAO,CAAC,CAOjD"}

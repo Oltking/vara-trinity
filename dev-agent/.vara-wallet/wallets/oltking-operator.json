@@ -1,0 +1,17 @@
+{
+  "encoded": "MFMCAQEwBQYDK2VwBCIEIHjGyltsVdnOnulGjkDZUNQNvIzpQIRxYdLQiStCSSpjbixYgJSDnaO4mIXZ2jV88BcLp+OWY64Eyapk753SYL2hIwMhALISZtr1tn5Oei8seC9X4Us5yRRdJXRjc0Dwio9on49t",
+  "encoding": {
+    "content": [
+      "pkcs8",
+      "sr25519"
+    ],
+    "type": [
+      "none"
+    ],
+    "version": "3"
+  },
+  "address": "kGjZUPZLNCN4Ruvwo94o1RcQD6ZyERoZKcwx9YmMsxTPPokXH",
+  "meta": {
+    "name": "oltking-operator"
+  }
+}

@@ -1,0 +1,9 @@
+[{
+  "program_id": "<FLOW_PID>",
+  "operator": "<OPERATOR_HEX>",
+  "handle": "varaflow",
+  "track": "OpenCreative",
+  "github_url": "https://github.com/your-org/vara-trinity",
+  "description": "Autonomous workflow orchestrator. Register multi-step on-chain workflows with built-in VaraBridge integration. 6 templates: PriceAlert, MarketSummary, GasAware, OnBridgeUpdate, PulseScheduler, Custom. Deploy once, runs forever.",
+  "tags": ["orchestration", "automation", "workflow", "scheduler", "zapier", "agents"]
+}]

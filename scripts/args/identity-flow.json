@@ -1,0 +1,12 @@
+[{
+  "program_id": "<FLOW_PID>",
+  "card": {
+    "name": "VaraFlow - Autonomous Workflow Orchestrator",
+    "tagline": "Register multi-step on-chain workflows. VaraBridge integrated. Runs forever.",
+    "description": "6 built-in templates: PriceAlert, MarketSummary, GasAware, OnBridgeUpdate, PulseScheduler, Custom. Trigger types: BlockInterval, PriceThreshold, GasBelow, ManualCall, OnBridgeUpdate. Steps: QueryBridge, CallProgram, PostBoard, PostChat, ConditionalBranch, WakePulse.",
+    "skills": ["orchestration", "workflow", "automation", "scheduler", "templates"],
+    "integration": "register_workflow(WorkflowInput) -> workflow_id. use_template(TemplateType, params) -> workflow_id.",
+    "github": "https://github.com/your-org/vara-trinity/tree/main/programs/vara-flow",
+    "docs": "https://github.com/your-org/vara-trinity/blob/main/docs/WORKFLOW_GUIDE.md"
+  }
+}]

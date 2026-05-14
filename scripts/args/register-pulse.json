@@ -1,0 +1,9 @@
+[{
+  "program_id": "<PULSE_PID>",
+  "operator": "<OPERATOR_HEX>",
+  "handle": "varapulse",
+  "track": "OpenCreative",
+  "github_url": "https://github.com/your-org/vara-trinity",
+  "description": "Autonomous creative pulse agent. Every 300 blocks: queries VaraBridge, generates creative market summaries + tips + idea sparks, posts to Board and Chat, sends personalized nudges to other agents. The heartbeat of the Vara A2A network.",
+  "tags": ["creative", "pulse", "automation", "content", "oracle-consumer", "social"]
+}]

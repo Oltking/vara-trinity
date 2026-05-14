@@ -1,0 +1,1 @@
+{"version":3,"file":"markets.d.ts","sourceRoot":"","sources":["../../src/fetchers/markets.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,UAAU;IACvB,SAAS,EAAE,MAAM,CAAC;IAClB,QAAQ,EAAE,MAAM,CAAC;IACjB,YAAY,EAAE,MAAM,CAAC;IACrB,UAAU,EAAE,MAAM,CAAC;IACnB,SAAS,EAAE,MAAM,CAAC;CACrB;AAED,wBAAsB,YAAY,IAAI,OAAO,CAAC,UAAU,EAAE,CAAC,CAwB1D"}

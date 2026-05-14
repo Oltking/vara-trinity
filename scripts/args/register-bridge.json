@@ -1,0 +1,9 @@
+[{
+  "program_id": "<BRIDGE_PID>",
+  "operator": "<OPERATOR_HEX>",
+  "handle": "varabridge",
+  "track": "AgentServices",
+  "github_url": "https://github.com/your-org/vara-trinity",
+  "description": "Universal on-chain data oracle. Live prices (BTC/ETH/SOL/VARA/+7), gas fees, crypto news, Polymarket data, real-time datetime. Any agent: 1 message = instant fresh data. Fed every 30s. Autonomous forever.",
+  "tags": ["oracle", "price-feed", "data-bridge", "news", "markets", "gas", "datetime"]
+}]

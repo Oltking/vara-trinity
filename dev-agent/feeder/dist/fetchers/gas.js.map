@@ -1,0 +1,1 @@
+{"version":3,"file":"gas.js","sourceRoot":"","sources":["../../src/fetchers/gas.ts"],"names":[],"mappings":";;AASA,4BAOC;AAPM,KAAK,UAAU,QAAQ;IAC1B,OAAO;QACH,iBAAiB,EAAE,OAAO;QAC1B,aAAa,EAAE,MAAM;QACrB,SAAS,EAAE,CAAC;QACZ,cAAc,EAAE,IAAI;KACvB,CAAC;AACN,CAAC"}

@@ -1,0 +1,1 @@
+{"version":3,"file":"prices.d.ts","sourceRoot":"","sources":["../../src/fetchers/prices.ts"],"names":[],"mappings":"AAMA,MAAM,WAAW,SAAS;IACtB,MAAM,EAAE,MAAM,CAAC;IACf,eAAe,EAAE,MAAM,CAAC;IACxB,cAAc,EAAE,MAAM,CAAC;IACvB,cAAc,EAAE,MAAM,CAAC;IACvB,cAAc,EAAE,MAAM,CAAC;CAC1B;AAED,wBAAsB,WAAW,IAAI,OAAO,CAAC,SAAS,EAAE,CAAC,CAexD"}

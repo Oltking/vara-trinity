@@ -1,0 +1,31 @@
+# Rust build artifacts
+target/
+**/*.rs.bk
+
+# Feeder
+feeder/dist/
+feeder/node_modules/
+feeder/feeder.log
+
+# Environment
+.env
+!env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temp
+*.log
+/tmp/
+
+# Gear build artifacts
+**/wasm32-v1-none/
+**/wasm32-gear/
+**/wasm-projects/

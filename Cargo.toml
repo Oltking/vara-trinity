@@ -1,0 +1,20 @@
+[workspace]
+members = [
+    "programs/vara-bridge",
+    "programs/vara-flow",
+    "programs/vara-pulse",
+    "programs/vara-strategy",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+
+[workspace.dependencies]
+sails-rs = { git = "https://github.com/gear-tech/sails.git" }
+
+[profile.release]
+lto = true
+opt-level = "z"
+panic = "abort"
