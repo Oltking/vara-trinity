@@ -2,14 +2,27 @@
 target/
 **/*.rs.bk
 
+# Gear/Gear builder outputs
+**/wasm32v1-none/
+**/wasm32-gear/
+**/wasm-projects/
+
 # Feeder
 feeder/dist/
 feeder/node_modules/
-feeder/feeder.log
+feeder/**/feeder.log
+feeder/package-lock.json
+
+# Dev agent copy (local runner, not for repo)
+dev-agent/
 
 # Environment
 .env
-!env.example
+!.env.example
+
+# Wallet keys
+.vara-wallet/
+*.json
 
 # IDE
 .vscode/
@@ -21,11 +34,5 @@ feeder/feeder.log
 .DS_Store
 Thumbs.db
 
-# Temp
+# Logs
 *.log
-/tmp/
-
-# Gear build artifacts
-**/wasm32-v1-none/
-**/wasm32-gear/
-**/wasm-projects/
