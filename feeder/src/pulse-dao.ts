@@ -55,12 +55,15 @@ function fetchAgents(): AgentProfile[] {
     if (!config.NETWORK_PID || !config.A2A_IDL) return [];
 
     try {
+        const argsFile = join(tmpdir(), `discover-${Date.now()}.json`);
+        writeFileSync(argsFile, JSON.stringify([{ include: null }, null, 100]), 'utf-8');
         const result = execSync(
             `vara-wallet --account ${config.ACCT} --network ${config.VARA_NETWORK} ` +
             `--json call ${config.NETWORK_PID} Registry/Discover ` +
-            `--args '[{"include": null}, null, 100]' --idl "${config.A2A_IDL}"`,
+            `--args-file ${argsFile} --idl "${config.A2A_IDL}"`,
             { timeout: 20_000, encoding: 'utf-8' }
         );
+        try { unlinkSync(argsFile); } catch {}
 
         const items: any[] = JSON.parse(result as string)?.result?.items || [];
         return items.map((a: any) => ({

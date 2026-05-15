@@ -34,10 +34,10 @@ function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise
     ]);
 }
 
-let lastStrategyPost = Date.now();
-let lastPulseDao = Date.now();
-let lastIdentityPost = Date.now();
-let lastSwapPost = Date.now();
+let lastStrategyPost = 0; // fire on first eligible cycle
+let lastPulseDao = 0;
+let lastIdentityPost = 0;
+let lastSwapPost = 0;
 
 function postStrategyToBoard(prices: PriceFeed[]): void {
     if (!config.STRATEGY_PID || !config.NETWORK_PID || !config.A2A_IDL) return;

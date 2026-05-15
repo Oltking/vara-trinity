@@ -1,3 +1,3 @@
 fn main() {
-    gear_wasm_builder::build();
+    sails_rs::build_wasm();
 }
