@@ -175,7 +175,8 @@ export function runPulseDao(): void {
     try {
         execSync(`vara-wallet --account ${config.ACCT} --network ${config.VARA_NETWORK} ` +
             `--json call ${config.NETWORK_PID} Chat/Post ` +
-            `--args-file ${chatFile} --idl "${config.A2A_IDL}"`, { timeout: 20_000, encoding: 'utf-8' });
+            `--args-file ${chatFile} --idl "${config.A2A_IDL}"` +
+            (config.VOUCHER_ID ? ` --voucher ${config.VOUCHER_ID}` : ''), { timeout: 20_000, encoding: 'utf-8' });
         console.log(`PulseDAO: ${agents.length} agents, ${matches.length} matches`);
     } catch {} finally { try { unlinkSync(chatFile); } catch {} }
 }

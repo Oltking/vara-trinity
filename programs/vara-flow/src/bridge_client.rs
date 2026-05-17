@@ -1,11 +1,16 @@
+extern crate alloc;
+
+use alloc::string::String;
 use gstd::collections::BTreeMap;
 use gstd::{exec, msg, ActorId, MessageId};
-use sails_rs::prelude::*;
+use parity_scale_codec::{Decode, Encode};
+use scale_info::TypeInfo;
 
 use crate::state::{GasFeed, PriceFeed, QueryReply, QueryRequest};
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct CachedBridgeData {
     pub prices: BTreeMap<String, PriceFeed>,
     pub gas: GasFeed,

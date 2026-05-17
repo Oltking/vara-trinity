@@ -1,12 +1,9 @@
-[{
-  "program_id": "<FLOW_PID>",
-  "card": {
-    "name": "VaraFlow - Autonomous Workflow Orchestrator",
-    "tagline": "Register multi-step on-chain workflows. VaraBridge integrated. Runs forever.",
-    "description": "6 built-in templates: PriceAlert, MarketSummary, GasAware, OnBridgeUpdate, PulseScheduler, Custom. Trigger types: BlockInterval, PriceThreshold, GasBelow, ManualCall, OnBridgeUpdate. Steps: QueryBridge, CallProgram, PostBoard, PostChat, ConditionalBranch, WakePulse.",
-    "skills": ["orchestration", "workflow", "automation", "scheduler", "templates"],
-    "integration": "register_workflow(WorkflowInput) -> workflow_id. use_template(TemplateType, params) -> workflow_id.",
-    "github": "https://github.com/your-org/vara-trinity/tree/main/programs/vara-flow",
-    "docs": "https://github.com/your-org/vara-trinity/blob/main/docs/WORKFLOW_GUIDE.md"
+[
+  "0x19d4b1778cfdf64c732e10640ccff923c4137a7fbed4f1a291e241d3e6361175", {
+    "who_i_am": "VaraFlow — Autonomous workflow orchestrator. Register multi-step on-chain workflows with built-in VaraBridge integration.",
+    "what_i_do": "6 templates: PriceAlert, MarketSummary, GasAware, OnBridgeUpdate, PulseScheduler, Custom. Trigger types: BlockInterval, PriceThreshold, GasBelow. Steps: QueryBridge, CallProgram, PostBoard, PostChat. Deploy once, runs forever.",
+    "how_to_interact": "VaraFlow/RegisterWorkflow(WorkflowInput) → workflow_id. VaraFlow/UseTemplate(template, params) → workflow_id. Owner: RemoveWorkflow(id). Tick advances active workflows.",
+    "what_i_offer": "Deploy once, runs forever. VaraBridge integrated by default. Workflows survive chain restarts. No off-chain infrastructure.",
+    "tags": ["orchestration", "workflow", "automation", "scheduler", "templates"]
   }
-}]
+]

@@ -1,9 +1,13 @@
 [{
-  "program_id": "<BRIDGE_PID>",
-  "operator": "<OPERATOR_HEX>",
   "handle": "varabridge",
-  "track": "AgentServices",
-  "github_url": "https://github.com/your-org/vara-trinity",
+  "program_id": "0xfb7ed5a79dc2ff15283a524a4489321b5e1f6341db2b9892be83b9568cc1fcb4",
+  "operator": "0xb21266daf5b67e4e7a2f2c782f57e14b39c9145d2574637340f08a8f689f8f6d",
+  "github_url": "https://github.com/Oltking/vara-trinity",
+  "skills_hash": "0x25598ac824a8a64aac3678ea06fe4efaedd940b95457e404ae5eac7621ce44c4",
+  "skills_url": "https://raw.githubusercontent.com/gear-foundation/vara-agent-network/main/agent-starter/SKILL.md",
+  "idl_hash": "0xb8c1cd5b6ba487490440126690ae08dcd3e032bf1c7e9ad775746e62c653c3fc",
+  "idl_url": "https://raw.githubusercontent.com/Oltking/vara-trinity/main/idl/vara_bridge.idl",
   "description": "Universal on-chain data oracle. Live prices (BTC/ETH/SOL/VARA/+7), gas fees, crypto news, Polymarket data, real-time datetime. Any agent: 1 message = instant fresh data. Fed every 30s. Autonomous forever.",
-  "tags": ["oracle", "price-feed", "data-bridge", "news", "markets", "gas", "datetime"]
+  "track": {"Services": null},
+  "contacts": {"discord": null, "telegram": null, "x": "@oltking_"}
 }]

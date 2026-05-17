@@ -2,7 +2,7 @@
 
 extern crate alloc;
 
-use alloc::{vec, vec::Vec};
+use alloc::{string::String, vec, vec::Vec};
 use core::cell::RefCell;
 
 pub mod broadcast;
@@ -13,13 +13,14 @@ pub mod templates;
 
 use gstd::{exec, msg, ActorId};
 use sails_rs::prelude::*;
-use sails_rs::scale_codec::Encode;
+use sails_rs::scale_codec::{Decode, Encode};
 
 use state::*;
 use broadcast::{post_to_board, post_to_chat};
 
-pub const GAS_FOR_BRIDGE_QUERY: u128 = 5_000_000_000;
 pub const GAS_FOR_HUB: u128 = 2_000_000_000;
+pub const GAS_FOR_STRATEGY: u128 = 3_000_000_000;
+pub const GAS_FOR_FLOW: u128 = 2_000_000_000;
 pub const GAS_RESERVE_TOTAL: u64 = 250_000_000_000_000;
 pub const GAS_RESERVE_DURATION: u32 = 1_000_000;
 
@@ -37,7 +38,7 @@ impl<'a> VaraPulseService<'a> {
     }
 
     pub fn on_bridge_reply(&mut self, reply: QueryReply) {
-        let data = self.extract_snapshot(reply);
+        let (data, price_feed_data) = self.extract_snapshot(reply);
         let pulse_type = self.pick_pulse_type(&data);
         let body = self.generate_pulse(&data, &pulse_type);
 
@@ -72,18 +73,45 @@ impl<'a> VaraPulseService<'a> {
         s.pulse_history.push(record);
         s.total_pulses += 1;
         s.last_pulse_block = exec::block_height();
+
+        drop(s);
+
+        if !price_feed_data.is_empty() {
+            let strategy_pid = self.state.borrow().strategy_pid;
+            if strategy_pid != ActorId::zero() {
+                let srv = "VaraStrategy".encode();
+                let mtd = "Analyze".encode();
+                let params = price_feed_data.encode();
+                let mut payload = Vec::with_capacity(srv.len() + mtd.len() + params.len());
+                payload.extend(srv);
+                payload.extend(mtd);
+                payload.extend(params);
+                let _ = msg::send_bytes_with_gas(strategy_pid, &payload, 10_000_000, 0);
+            }
+        }
+
+        let flow_pid = self.state.borrow().flow_pid;
+        if flow_pid != ActorId::zero() {
+            let srv = "VaraFlow".encode();
+            let mtd = "Tick".encode();
+            let mut payload = Vec::with_capacity(srv.len() + mtd.len());
+            payload.extend(srv);
+            payload.extend(mtd);
+            let _ = msg::send_bytes_with_gas(flow_pid, &payload, 5_000_000, 0);
+        }
     }
 }
 
 #[program]
 impl VaraPulseProgram {
-    pub fn new(bridge_pid: ActorId, flow_pid: ActorId, network_pid: ActorId) -> Self {
+    pub fn new(bridge_pid: ActorId, flow_pid: ActorId, network_pid: ActorId, strategy_pid: ActorId) -> Self {
         let owner = msg::source();
         Self {
             state: RefCell::new(PulseState {
                 bridge_pid,
                 flow_pid,
                 network_pid,
+                strategy_pid,
                 owner,
                 ..Default::default()
             }),
@@ -96,16 +124,20 @@ impl VaraPulseProgram {
 
     #[handle_reply]
     fn handle_bridge_reply(&self) {
-        let raw = gstd::msg::load_bytes().expect("Failed to load reply");
-        let offset = if raw.len() >= 16 {
-            sails_rs::meta::SailsMessageHeader::try_from_bytes(&raw[..16])
-                .ok()
-                .map(|h| h.hlen().inner() as usize)
-                .unwrap_or(0)
-        } else {
-            0
+        let raw: Vec<u8> = match gstd::msg::load() {
+            Ok(bytes) => bytes,
+            Err(_) => return,
         };
-        let reply: QueryReply = Decode::decode(&mut &raw[offset..]).expect("Bad bridge reply");
+        let reply: QueryReply = Decode::decode(&mut &raw[..])
+            .unwrap_or_else(|_| {
+                let mut cursor = &raw[..];
+                let _: Result<String, _> = Decode::decode(&mut cursor);
+                let _: Result<String, _> = Decode::decode(&mut cursor);
+                Decode::decode(&mut cursor).unwrap_or_else(|_| {
+                    QueryReply::Error("decode failed".into())
+                })
+            });
+        if let QueryReply::Error(_) = reply { return; }
         let mut service = VaraPulseService::new(&self.state);
         service.on_bridge_reply(reply);
     }
@@ -115,17 +147,30 @@ impl VaraPulseProgram {
 impl VaraPulseService<'_> {
     #[export]
     pub fn run(&mut self) {
+        let gas_total = exec::gas_available();
+        if gas_total < 500_000_000 {
+            return;
+        }
         let bridge_pid = self.state.borrow().bridge_pid;
-        msg::send(
-            bridge_pid,
-            QueryRequest {
-                query_type: "all".into(),
-                symbol: None,
-                keys: None,
-            },
-            GAS_FOR_BRIDGE_QUERY,
-        )
-        .expect("Bridge query failed");
+        let service_route = "VaraBridge".encode();
+        let method_route = "QueryAndReply".encode();
+        let params = QueryRequest {
+            query_type: "all".into(),
+            symbol: None,
+            keys: None,
+        }
+        .encode();
+        let mut payload = Vec::with_capacity(
+            service_route.len() + method_route.len() + params.len(),
+        );
+        payload.extend(service_route);
+        payload.extend(method_route);
+        payload.extend(params);
+        let gas = gas_total * 60 / 100;
+        let msg_id = msg::send_bytes_with_gas(bridge_pid, &payload, gas, 0)
+            .expect("Bridge query failed");
+        exec::reply_deposit(msg_id, gas_total * 15 / 100)
+            .expect("Failed to set reply deposit");
 
         let route = ["VaraPulse".encode(), "Run".encode()].concat();
         msg::send_bytes_with_gas_delayed(
@@ -210,6 +255,17 @@ impl VaraPulseService<'_> {
             .take(limit as usize)
             .cloned()
             .collect()
+    }
+
+    #[export]
+    pub fn withdraw(&mut self, amount: u128) {
+        let caller = msg::source();
+        let owner = self.state.borrow().owner;
+        if caller != owner {
+            panic!("Owner only");
+        }
+        let val = msg::send(caller, b"", amount).expect("Withdraw failed");
+        let _ = val;
     }
 
     #[export]

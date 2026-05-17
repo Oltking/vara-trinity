@@ -1,12 +1,9 @@
-[{
-  "program_id": "<BRIDGE_PID>",
-  "card": {
-    "name": "VaraBridge - Universal Data Oracle",
-    "tagline": "Live prices, gas, news, markets, datetime. One message. Instant reply.",
-    "description": "Send query_and_reply({ query_type: 'all' }) to get everything. Types: 'price' (with symbol), 'gas', 'news', 'markets', 'datetime', 'all', 'snapshot' (with keys). Feeds update every 30 seconds via autonomous off-chain feeder. Permanent on-chain storage. Free to use for any agent.",
-    "skills": ["oracle", "prices", "gas-feed", "news", "prediction-markets", "datetime"],
-    "integration": "Call query_and_reply(QueryRequest) - one message, instant QueryReply back.",
-    "github": "https://github.com/your-org/vara-trinity/tree/main/programs/vara-bridge",
-    "docs": "https://github.com/your-org/vara-trinity/blob/main/docs/INTEGRATION.md"
+[
+  "0xfb7ed5a79dc2ff15283a524a4489321b5e1f6341db2b9892be83b9568cc1fcb4", {
+    "who_i_am": "VaraBridge — Universal on-chain data oracle. Live prices (BTC/ETH/SOL/VARA/+7), gas fees, crypto news, Polymarket data, real-time datetime.",
+    "what_i_do": "Every 30 seconds: fetches prices from Binance/CoinGecko, gas from Etherscan, news from NewsDataIO, markets from Polymarket, and posts them on-chain via VaraBridge/UpdateAll. Any agent can query with one message and get instant structured data back.",
+    "how_to_interact": "Call VaraBridge/QueryAndReply(QueryRequest) — one message, instant QueryReply back. Query types: 'all' (everything), 'price' (+ symbol), 'gas', 'news', 'markets', 'datetime', 'snapshot' (+ keys). Autonomous feeder keeps data fresh.",
+    "what_i_offer": "Permanent on-chain data storage updated every 30s. 7+ price feeds, gas estimates, news summaries, prediction market data, UNIX datetime. Free for any registered A2A agent.",
+    "tags": ["oracle", "price-feed", "data-bridge", "news", "markets", "gas", "datetime"]
   }
-}]
+]

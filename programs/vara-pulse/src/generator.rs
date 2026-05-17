@@ -1,39 +1,49 @@
 use alloc::format;
 use alloc::string::String;
+use alloc::vec::Vec;
 use gstd::exec;
 
-use crate::state::{DataSnapshot, PulseType, QueryReply};
+use crate::state::{DataSnapshot, PulseType, QueryReply, StrategyPriceEntry};
 
 impl<'a> super::VaraPulseService<'a> {
-    pub fn extract_snapshot(&self, reply: QueryReply) -> DataSnapshot {
+    pub fn extract_snapshot(&self, reply: QueryReply) -> (DataSnapshot, Vec<StrategyPriceEntry>) {
         match reply {
             QueryReply::All(snapshot) => {
                 let eth = snapshot
                     .prices
                     .iter()
-                    .find(|p| p.symbol == "ETH")
-                    .map(|p| p.price_usd_micro)
+                    .find(|(symbol, _)| symbol == "ETH")
+                    .map(|(_, p)| p.price_usd_micro)
                     .unwrap_or(0);
                 let btc = snapshot
                     .prices
                     .iter()
-                    .find(|p| p.symbol == "BTC")
-                    .map(|p| p.price_usd_micro)
+                    .find(|(symbol, _)| symbol == "BTC")
+                    .map(|(_, p)| p.price_usd_micro)
                     .unwrap_or(0);
                 let vara = snapshot
                     .prices
                     .iter()
-                    .find(|p| p.symbol == "VARA")
-                    .map(|p| p.price_usd_micro)
+                    .find(|(symbol, _)| symbol == "VARA")
+                    .map(|(_, p)| p.price_usd_micro)
                     .unwrap_or(0);
                 let top_news = snapshot
                     .news
                     .first()
                     .map(|n| n.title.clone())
                     .unwrap_or_default();
-                let top_market = snapshot.markets.first().map(|m| m.question.clone());
+                let top_market = snapshot.markets.first().map(|(_, m)| m.question.clone());
 
-                DataSnapshot {
+                let price_feed_data: Vec<StrategyPriceEntry> = snapshot.prices.iter().map(|(_, p)| {
+                    StrategyPriceEntry {
+                        symbol: p.symbol.clone(),
+                        price_usd_micro: p.price_usd_micro,
+                        change_24h_bps: p.change_24h_bps,
+                        volume_24h_usd: p.volume_24h_usd,
+                    }
+                }).collect();
+
+                (DataSnapshot {
                     eth_usd: eth,
                     btc_usd: btc,
                     vara_usd: vara,
@@ -42,9 +52,9 @@ impl<'a> super::VaraPulseService<'a> {
                     top_market,
                     block: snapshot.block,
                     utc_string: snapshot.datetime.utc_string,
-                }
+                }, price_feed_data)
             }
-            _ => DataSnapshot {
+            _ => (DataSnapshot {
                 eth_usd: 0,
                 btc_usd: 0,
                 vara_usd: 0,
@@ -53,7 +63,7 @@ impl<'a> super::VaraPulseService<'a> {
                 top_market: None,
                 block: exec::block_height(),
                 utc_string: String::new(),
-            },
+            }, Vec::new()),
         }
     }
 

@@ -1,14 +1,19 @@
+extern crate alloc;
+
 use alloc::string::String;
 use alloc::vec::Vec;
 use gstd::ActorId;
-use sails_rs::prelude::*;
+use parity_scale_codec::{Decode, Encode};
+use scale_info::TypeInfo;
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct PulseState {
     pub bridge_pid: ActorId,
     pub flow_pid: ActorId,
     pub network_pid: ActorId,
+    pub strategy_pid: ActorId,
     pub owner: ActorId,
     pub pulse_history: Vec<PulseRecord>,
     pub known_agents: Vec<AgentRecord>,
@@ -22,8 +27,9 @@ pub struct PulseState {
     pub last_pulse_block: u32,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct PulseRecord {
     pub pulse_id: u64,
     pub block: u32,
@@ -33,8 +39,9 @@ pub struct PulseRecord {
     pub nudges_sent: Vec<String>,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub enum PulseType {
     MarketSummary,
     GasTip,
@@ -45,8 +52,9 @@ pub enum PulseType {
     CreativeSpark,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct AgentRecord {
     pub handle: String,
     pub program_id: String,
@@ -54,8 +62,9 @@ pub struct AgentRecord {
     pub last_nudged_block: u32,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct DataSnapshot {
     pub eth_usd: u64,
     pub btc_usd: u64,
@@ -67,16 +76,18 @@ pub struct DataSnapshot {
     pub utc_string: String,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct PulseConfig {
     pub interval: Option<u32>,
     pub max_nudges: Option<u32>,
     pub cooldown: Option<u32>,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct PulseStats {
     pub total_pulses: u64,
     pub total_nudges: u64,
@@ -85,16 +96,18 @@ pub struct PulseStats {
     pub known_agents: u32,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct QueryRequest {
     pub query_type: String,
     pub symbol: Option<String>,
     pub keys: Option<Vec<String>>,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub enum QueryReply {
     Price(Option<PriceFeed>),
     Gas(GasFeed),
@@ -105,8 +118,9 @@ pub enum QueryReply {
     Error(String),
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct PriceFeed {
     pub symbol: String,
     pub price_usd_micro: u64,
@@ -116,8 +130,9 @@ pub struct PriceFeed {
     pub updated_at_block: u32,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct GasFeed {
     pub current_fee_micro: u64,
     pub suggested_tip: u64,
@@ -126,8 +141,9 @@ pub struct GasFeed {
     pub updated_at_block: u32,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct NewsSummary {
     pub title: String,
     pub source: String,
@@ -135,8 +151,9 @@ pub struct NewsSummary {
     pub category: String,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct MarketFeed {
     pub market_id: String,
     pub question: String,
@@ -146,8 +163,9 @@ pub struct MarketFeed {
     pub updated_at_block: u32,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct DatetimeFeed {
     pub unix_ts: u64,
     pub utc_string: String,
@@ -155,19 +173,31 @@ pub struct DatetimeFeed {
     pub updated_at_block: u32,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct Snapshot {
-    pub prices: Vec<PriceFeed>,
+    pub prices: Vec<(String, PriceFeed)>,
     pub gas: GasFeed,
     pub news: Vec<NewsSummary>,
-    pub markets: Vec<MarketFeed>,
+    pub markets: Vec<(String, MarketFeed)>,
     pub datetime: DatetimeFeed,
     pub block: u32,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
+pub struct StrategyPriceEntry {
+    pub symbol: String,
+    pub price_usd_micro: u64,
+    pub change_24h_bps: i32,
+    pub volume_24h_usd: u64,
+}
+
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub enum HubCmd {
     PostAnnouncement { body: String },
     ChatPost { body: String, mentions: Vec<String> },
@@ -179,6 +209,7 @@ impl Default for PulseState {
             bridge_pid: ActorId::zero(),
             flow_pid: ActorId::zero(),
             network_pid: ActorId::zero(),
+            strategy_pid: ActorId::zero(),
             owner: ActorId::zero(),
             pulse_history: Vec::new(),
             known_agents: Vec::new(),

@@ -7,7 +7,10 @@ edition.workspace = true
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-sails-rs = { workspace = true }
 gstd = "1.10.0"
+sails-rs = "0.10.3"
+parity-scale-codec = { version = "3", default-features = false, features = ["derive"] }
+scale-info = { version = "2", default-features = false, features = ["derive"] }
+
 [build-dependencies]
-gear-wasm-builder = "=1.10.0"
+gear-wasm-builder = "1.10.0"

@@ -43,8 +43,8 @@ export const config = {
     A2A_IDL: optionalEnv('A2A_IDL'),
     COINGECKO_KEY: optionalEnv('COINGECKO_KEY'),
     NEWS_API_KEY: optionalEnv('NEWS_API_KEY'),
-    FEED_INTERVAL_MS: 30_000,
-    RETRY_DELAY_MS: 30_000,
+    FEED_INTERVAL_MS: 900_000,
+    RETRY_DELAY_MS: 900_000,
 };
 
 export function validateConfig(): void {

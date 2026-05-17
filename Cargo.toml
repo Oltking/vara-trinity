@@ -12,7 +12,7 @@ version = "0.1.0"
 edition = "2021"
 
 [workspace.dependencies]
-sails-rs = { git = "https://github.com/gear-tech/sails.git" }
+sails-rs = "0.10.3"
 
 [profile.release]
 lto = true

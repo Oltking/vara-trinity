@@ -1,11 +1,17 @@
-use sails_rs::prelude::*;
+extern crate alloc;
+
+use alloc::string::String;
+use alloc::vec;
+use parity_scale_codec::{Decode, Encode};
+use scale_info::TypeInfo;
 
 use crate::state::{
     Condition, QueryRequest, Step, StepBox, StepType, Trigger, WorkflowInput,
 };
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct TemplateParams {
     pub interval: Option<u32>,
     pub symbol: Option<String>,
@@ -13,8 +19,9 @@ pub struct TemplateParams {
     pub body_template: Option<String>,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub enum TemplateType {
     PriceAlert,
     MarketSummaryBoard,

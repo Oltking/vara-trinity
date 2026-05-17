@@ -1,10 +1,18 @@
+extern crate alloc;
+
+use alloc::boxed::Box;
+use alloc::string::String;
+use alloc::vec::Vec;
 use gstd::collections::BTreeMap;
 use gstd::{ActorId, MessageId};
-use sails_rs::prelude::*;
+use parity_scale_codec::{Decode, Encode};
+use scale_info::TypeInfo;
 
 use crate::bridge_client::CachedBridgeData;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct StepBox(pub Box<Step>);
 
 impl core::ops::Deref for StepBox {
@@ -14,46 +22,15 @@ impl core::ops::Deref for StepBox {
     }
 }
 
-impl Encode for StepBox {
-    fn encode_to<W: Output + ?Sized>(&self, dest: &mut W) {
-        Encode::encode_to(&self.0, dest);
-    }
-}
-
-impl Decode for StepBox {
-    fn decode<I: scale_codec::Input>(input: &mut I) -> Result<Self, scale_codec::Error> {
-        Ok(StepBox(Decode::decode(input)?))
-    }
-}
-
-impl type_info::TypeInfo for StepBox {
-    type Identity = <Box<Step> as type_info::TypeInfo>::Identity;
-
-    fn type_decl(registry: &mut type_info::Registry) -> type_info::ast::TypeDecl {
-        <Box<Step> as type_info::TypeInfo>::type_decl(registry)
-    }
-
-    fn type_def(registry: &mut type_info::Registry) -> Option<type_info::ast::Type> {
-        <Box<Step> as type_info::TypeInfo>::type_def(registry)
-    }
-
-    fn module_path() -> &'static str {
-        <Box<Step> as type_info::TypeInfo>::module_path()
-    }
-}
-
-impl ReflectHash for StepBox {
-    const HASH: [u8; 32] = [0u8; 32];
-}
-
 impl StepBox {
     pub fn new(step: Step) -> Self {
         StepBox(Box::new(step))
     }
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct FlowState {
     pub workflows: BTreeMap<u64, Workflow>,
     pub next_workflow_id: u64,
@@ -70,8 +47,9 @@ pub struct FlowState {
     pub cached_bridge_data: Option<CachedBridgeData>,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct Workflow {
     pub id: u64,
     pub owner: ActorId,
@@ -86,8 +64,9 @@ pub struct Workflow {
     pub next_run_block: u32,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub enum Trigger {
     BlockInterval { every_n_blocks: u32 },
     PriceThreshold {
@@ -100,8 +79,9 @@ pub enum Trigger {
     OnBridgeUpdate,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct Step {
     pub step_type: StepType,
     pub gas_limit: u128,
@@ -111,8 +91,9 @@ pub struct Step {
     pub on_timeout: Option<StepBox>,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub enum StepType {
     QueryBridge { query: QueryRequest },
     CallProgram {
@@ -134,8 +115,9 @@ pub enum StepType {
     Done,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub enum Condition {
     PriceAbove {
         symbol: String,
@@ -150,8 +132,9 @@ pub enum Condition {
     Always,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct ExecutionContext {
     pub exec_id: u64,
     pub workflow_id: u64,
@@ -161,8 +144,9 @@ pub struct ExecutionContext {
     pub status: ExecutionStatus,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub enum ExecutionStatus {
     Running,
     Completed,
@@ -170,16 +154,18 @@ pub enum ExecutionStatus {
     TimedOut,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct PendingStep {
     pub exec_id: u64,
     pub next_step: Option<StepBox>,
     pub timeout_block: u32,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct WorkflowInput {
     pub name: String,
     pub description: String,
@@ -187,8 +173,9 @@ pub struct WorkflowInput {
     pub steps: Vec<Step>,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct WorkflowPatch {
     pub name: Option<String>,
     pub description: Option<String>,
@@ -197,8 +184,9 @@ pub struct WorkflowPatch {
     pub active: Option<bool>,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct WorkflowSummary {
     pub id: u64,
     pub name: String,
@@ -209,8 +197,9 @@ pub struct WorkflowSummary {
     pub next_run_block: u32,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct FlowStats {
     pub workflow_count: u64,
     pub execution_count: u64,
@@ -218,34 +207,39 @@ pub struct FlowStats {
     pub active_workflows: u64,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct TriggerInput {
     pub data: BTreeMap<String, String>,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct EncodedCall {
     pub method: String,
     pub args: Vec<u8>,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub enum HubCmd {
     PostAnnouncement { body: String },
     ChatPost { body: String, mentions: Vec<String> },
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub enum PulseCmd {
     Run,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub enum QueryType {
     Price,
     Gas,
@@ -255,16 +249,18 @@ pub enum QueryType {
     All,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct QueryRequest {
     pub query_type: String,
     pub symbol: Option<String>,
     pub keys: Option<Vec<String>>,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub enum QueryReply {
     Price(Option<PriceFeed>),
     Gas(GasFeed),
@@ -275,8 +271,9 @@ pub enum QueryReply {
     Error(String),
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct PriceFeed {
     pub symbol: String,
     pub price_usd_micro: u64,
@@ -286,8 +283,9 @@ pub struct PriceFeed {
     pub updated_at_block: u32,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct GasFeed {
     pub current_fee_micro: u64,
     pub suggested_tip: u64,
@@ -296,8 +294,9 @@ pub struct GasFeed {
     pub updated_at_block: u32,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct NewsSummary {
     pub title: String,
     pub source: String,
@@ -305,8 +304,9 @@ pub struct NewsSummary {
     pub category: String,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct MarketFeed {
     pub market_id: String,
     pub question: String,
@@ -316,8 +316,9 @@ pub struct MarketFeed {
     pub updated_at_block: u32,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct DatetimeFeed {
     pub unix_ts: u64,
     pub utc_string: String,
@@ -325,8 +326,9 @@ pub struct DatetimeFeed {
     pub updated_at_block: u32,
 }
 
-#[derive(Clone, Debug)]
-#[sails_type]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct Snapshot {
     pub prices: BTreeMap<String, PriceFeed>,
     pub gas: GasFeed,

@@ -50,7 +50,7 @@ type PulseStats = struct {
 };
 
 constructor {
-  New : (bridge_pid: actor_id, flow_pid: actor_id, network_pid: actor_id);
+  New : (bridge_pid: actor_id, flow_pid: actor_id, network_pid: actor_id, strategy_pid: actor_id);
 };
 
 service VaraPulse {

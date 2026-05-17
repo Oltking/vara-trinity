@@ -14,7 +14,6 @@ pub mod workflow;
 use gstd::collections::BTreeMap;
 use gstd::{exec, msg, ActorId};
 use sails_rs::prelude::*;
-use sails_rs::scale_codec::Encode;
 
 use state::*;
 use templates::{build_template, TemplateParams, TemplateType};

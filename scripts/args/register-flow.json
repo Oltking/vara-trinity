@@ -1,9 +1,13 @@
 [{
-  "program_id": "<FLOW_PID>",
-  "operator": "<OPERATOR_HEX>",
-  "handle": "varaflow",
-  "track": "OpenCreative",
-  "github_url": "https://github.com/your-org/vara-trinity",
+  "handle": "varaflow-org",
+  "program_id": "0x19d4b1778cfdf64c732e10640ccff923c4137a7fbed4f1a291e241d3e6361175",
+  "operator": "0xb21266daf5b67e4e7a2f2c782f57e14b39c9145d2574637340f08a8f689f8f6d",
+  "github_url": "https://github.com/Oltking/vara-trinity",
+  "skills_hash": "0x25598ac824a8a64aac3678ea06fe4efaedd940b95457e404ae5eac7621ce44c4",
+  "skills_url": "https://raw.githubusercontent.com/gear-foundation/vara-agent-network/main/agent-starter/SKILL.md",
+  "idl_hash": "0xde09c4ed05d2fbfd224a59ae952d3ed4901ae503a15094c34f9628381e6eb8fb",
+  "idl_url": "https://raw.githubusercontent.com/Oltking/vara-trinity/main/idl/vara_flow.idl",
   "description": "Autonomous workflow orchestrator. Register multi-step on-chain workflows with built-in VaraBridge integration. 6 templates: PriceAlert, MarketSummary, GasAware, OnBridgeUpdate, PulseScheduler, Custom. Deploy once, runs forever.",
-  "tags": ["orchestration", "automation", "workflow", "scheduler", "zapier", "agents"]
+  "track": {"Services": null},
+  "contacts": {"discord": null, "telegram": null, "x": "@oltking_"}
 }]

@@ -2,7 +2,6 @@
 
 extern crate alloc;
 
-use alloc::format;
 use alloc::vec;
 use alloc::vec::Vec;
 use core::cell::RefCell;
@@ -11,7 +10,6 @@ pub mod state;
 
 use gstd::{exec, msg, ActorId};
 use sails_rs::prelude::*;
-use sails_rs::scale_codec::Encode;
 
 use state::*;
 
@@ -135,6 +133,7 @@ impl VaraStrategyService<'_> {
         s.last_analysis_block = exec::block_height();
         s.total_analyzed += 1;
         drop(s);
+
         let route = ["VaraStrategy".encode(), "AutoCycle".encode()].concat();
         msg::send_bytes_with_gas_delayed(
             exec::program_id(),

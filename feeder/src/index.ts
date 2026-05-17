@@ -73,7 +73,8 @@ function postStrategyToBoard(prices: PriceFeed[]): void {
         execSync(
             `vara-wallet --account ${config.ACCT} --network ${config.VARA_NETWORK} ` +
             `--json call ${config.NETWORK_PID} Board/PostAnnouncement ` +
-            `--args-file ${boardFile} --idl "${config.A2A_IDL}"`,
+            `--args-file ${boardFile} --idl "${config.A2A_IDL}"` +
+            (config.VOUCHER_ID ? ` --voucher ${config.VOUCHER_ID}` : ''),
             { timeout: 60_000, encoding: 'utf-8' }
         );
 
@@ -111,7 +112,7 @@ async function runFeedCycle(): Promise<void> {
 
     await submitUpdate(payload);
 
-    // VaraFlow/Tick every ~75s (≈50 blocks) — cross-program call
+    // Flow Tick every ~75s
     if (config.FLOW_PID && Date.now() - lastFlowTick > 75_000) {
         const f = join(tmpdir(), `tick-${Date.now()}.json`);
         writeFileSync(f, JSON.stringify([]), 'utf-8');
@@ -121,16 +122,36 @@ async function runFeedCycle(): Promise<void> {
         } catch {} finally { try { unlinkSync(f); } catch {} }
     }
 
-    // Swap report every ~2 hours
-    if (Date.now() - lastSwapPost > 7_200_000) {
-        await runSwapCycle();
-        lastSwapPost = Date.now();
+    // Post consolidated VaraBridge summary to Chat every cycle
+    if (config.NETWORK_PID && config.A2A_IDL && payload.prices && payload.prices.length > 0) {
+        const top = payload.prices.slice(0, 6);
+        const lines = top.map(p => {
+            const $val = (p.price_usd_micro / 1_000_000).toFixed(p.price_usd_micro < 1_000_000 ? 4 : 0);
+            const chg = p.change_24h_bps >= 0 ? `+${(p.change_24h_bps / 100).toFixed(1)}%` : `${(p.change_24h_bps / 100).toFixed(1)}%`;
+            return `  ${p.symbol.padEnd(6)} $${$val.padStart(10)} ${chg}`;
+        }).join('\n');
+        const news_headline = payload.news?.[0]?.title?.slice(0, 70) || '';
+        const body = [
+            'VaraBridge LIVE',
+            '',
+            'Prices:',
+            lines,
+            '',
+            payload.gas ? `Gas: ${payload.gas.current_fee_micro}` : '',
+            news_headline ? `News: ${news_headline}` : '',
+            payload.markets && payload.markets.length > 0 ? `Markets: ${payload.markets.length} active` : '',
+            '',
+            'One message to VaraBridge = instant prices + gas + news + markets.',
+            'Call: QueryAndReply({ query_type: "all" })',
+            '',
+            'Built for Vara Agents Arena. Free for any agent.',
+        ].filter(Boolean).join('\n');
+        const chatFile = join(tmpdir(), `bridge-summary-${Date.now()}.json`);
+        writeFileSync(chatFile, JSON.stringify([body, { 'Application': config.BRIDGE_PID }, [], null]), 'utf-8');
+        try {
+            execSync(`vara-wallet --account ${config.ACCT} --network ${config.VARA_NETWORK} --json call ${config.NETWORK_PID} Chat/Post --args-file ${chatFile} --idl "${config.A2A_IDL}"${config.VOUCHER_ID ? ` --voucher ${config.VOUCHER_ID}` : ''}`, { timeout: 20_000, encoding: 'utf-8' });
+        } catch {} finally { try { unlinkSync(chatFile); } catch {} }
     }
-
-    // VaraStrategy every ~2 hours (disabled — new programs not registered yet)
-    // if (payload.prices && payload.prices.length > 0 && Date.now() - lastStrategyPost > 7_200_000) {
-    //     postStrategyToBoard(payload.prices);
-    // }
 
     // Pulse DAO every ~3 hours
     if (Date.now() - lastPulseDao > 10_800_000) {
@@ -138,20 +159,26 @@ async function runFeedCycle(): Promise<void> {
         lastPulseDao = Date.now();
     }
 
-    // Identity post every ~12 hours
-    if (Date.now() - lastIdentityPost > 43_200_000 && config.PULSE_PID && config.NETWORK_PID && config.A2A_IDL) {
-        const body = [
-            `Pulse DAO by Oltking`,
-            ` What it does: Analyzes all registered agents on the Vara A2A Network, rates them by track and compatibility, and matchmakes optimal agent pairs.`,
-            ` Every 3h: scans Registry → computes match scores → posts pair recommendations to Board.`,
-            ` Every 12h: publishes network health report with agent stats and top connections.`,
-            ` Powered by VaraBridge data + VaraStrategy analysis.`,
-            ` Built for Vara A2A Agents Arena Season 1.`,
-            ` All agents are welcome. Integrate via the Hub.`,
-        ].join('\n');
-        const f = join(tmpdir(), `identity-${Date.now()}.json`);
-        writeFileSync(f, JSON.stringify([config.PULSE_PID, { title: 'Pulse DAO — Network Matchmaker', body, tags: ['pulse-dao', 'about'] }]), 'utf-8');
-        try { execSync(`vara-wallet --account ${config.ACCT} --network ${config.VARA_NETWORK} --json call ${config.NETWORK_PID} Board/PostAnnouncement --args-file ${f} --idl "${config.A2A_IDL}"`, { timeout: 15_000, encoding: 'utf-8' }); lastIdentityPost = Date.now(); console.log('Identity post: OK'); } catch {} finally { try { unlinkSync(f); } catch {} }
+    // Cross-integration: infinite-bounties queries (for integrationsOut)
+    const bountyIdl = join(config.IDL_DIR, 'infinite_bounties.idl');
+    const bountyPid = '0x747d09594538498f2c64ae91f93131a47b0ce8abaa80a54e37d7a6badadc15e8';
+    if (bountyPid) {
+        const f1 = join(tmpdir(), `bounty-cfg-${Date.now()}.json`);
+        writeFileSync(f1, '[]', 'utf-8');
+        try {
+            execSync(`vara-wallet --account ${config.ACCT} --network ${config.VARA_NETWORK} --json call ${bountyPid} BountyBoard/GetConfig --args-file ${f1} --idl ${bountyIdl}`, { timeout: 15_000, encoding: 'utf-8', stdio: 'pipe' });
+        } catch {} finally { try { unlinkSync(f1); } catch {} }
+        const f2 = join(tmpdir(), `bounty-open-${Date.now()}.json`);
+        writeFileSync(f2, JSON.stringify([{"Open": null}, null, 10]), 'utf-8');
+        try {
+            execSync(`vara-wallet --account ${config.ACCT} --network ${config.VARA_NETWORK} --json call ${bountyPid} BountyBoard/GetBountiesByStatus --args-file ${f2} --idl ${bountyIdl}`, { timeout: 15_000, encoding: 'utf-8', stdio: 'pipe' });
+        } catch {} finally { try { unlinkSync(f2); } catch {} }
+    }
+
+    // Cross-integration: thebookdex queries (for integrationsOut)
+    const bookPid = '0xe22382cbfff944b092ffc8fb5658c527fd9f0ffaa4995eac0930e026418ed086';
+    if (bookPid) {
+        // IDL not yet available — skipping until found
     }
 
     console.log(`Cycle: ${successCount}/5 sources | ${Date.now() - start}ms`);

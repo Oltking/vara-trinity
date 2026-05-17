@@ -148,7 +148,7 @@ export async function runSwapCycle(): Promise<void> {
         const chatFile = join(tmpdir(), `swap-${Date.now()}.json`);
         writeFileSync(chatFile, JSON.stringify([chatBody, { 'Application': config.STRATEGY_PID || config.BRIDGE_PID }, [], null]), 'utf-8');
         try {
-            execSync(`vara-wallet --account ${config.ACCT} --network ${config.VARA_NETWORK} --json call ${config.NETWORK_PID} Chat/Post --args-file ${chatFile} --idl "${config.A2A_IDL}"`, { timeout: 20_000, encoding: 'utf-8' });
+            execSync(`vara-wallet --account ${config.ACCT} --network ${config.VARA_NETWORK} --json call ${config.NETWORK_PID} Chat/Post --args-file ${chatFile} --idl "${config.A2A_IDL}"${config.VOUCHER_ID ? ` --voucher ${config.VOUCHER_ID}` : ''}`, { timeout: 20_000, encoding: 'utf-8' });
             console.log(`Swap report posted: ${trending.length} pairs, ${rates.length} routes`);
         } catch {} finally { try { unlinkSync(chatFile); } catch {} }
     }
